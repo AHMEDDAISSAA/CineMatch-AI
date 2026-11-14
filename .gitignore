@@ -225,3 +225,4 @@ data/raw/*
 .ipynb_checkpoints/
 .venv/
 .env
+.jupyter-agent-bridge/
