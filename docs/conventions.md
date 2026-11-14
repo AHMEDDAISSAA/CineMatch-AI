@@ -7,8 +7,8 @@
   `movies_content.csv`, `ratings_cf.csv`, `train.csv`, `validation.csv`, `test.csv`.
 
 ## Protocole d'évaluation
-- Split temporel par utilisateur : anciennes notes en Train, avant-dernière en Validation, dernière en Test.
-- Les utilisateurs avec moins de 3 notes restent dans Train.
+- Split temporel proportionnel par utilisateur : 80 % des notes les plus anciennes en Train, 10 % suivantes en Validation, 10 % les plus récentes en Test.
+- Latest Small : tous les utilisateurs ont au moins 20 notes, aucun cas particulier.
 - Métriques : RMSE, MAE, Precision@10, Recall@10, NDCG@10.
 
 ## Règles anti Data Leakage
