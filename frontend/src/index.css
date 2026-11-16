@@ -1,0 +1,257 @@
+@import "tailwindcss";
+
+/* Écrans d'ordinateur peu hauts (ex. 1280×720, 1536×800) : hero plus compact */
+@custom-variant short (@media (min-width: 1024px) and (max-height: 820px));
+
+@theme {
+  --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink-950: #05050a;
+  --color-ink-900: #0a0a14;
+  --color-ink-850: #0f0f1d;
+  --color-ink-800: #15152a;
+  --color-indigo-deep: #1e1b4b;
+  --color-cta: #e11d48;
+  --color-cta-hover: #f43f5e;
+  --color-glow: #818cf8;
+
+  /* Courbes fortes (emil-design-eng) */
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Couleur animable : permet aux lueurs de passer d'une couleur d'affiche à l'autre */
+@property --glow {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    @apply bg-ink-950 font-sans text-slate-100 antialiased;
+  }
+
+  /* Grain de pellicule, très léger et statique */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background: rgb(225 29 72 / 0.35);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-glow);
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
+}
+
+@layer components {
+  /* Retour immédiat à l'appui */
+  .pressable {
+    transition:
+      transform 160ms var(--ease-out-strong),
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+  .pressable:active {
+    transform: scale(0.97);
+  }
+
+  /* Apparition au défilement */
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 600ms var(--ease-out-strong),
+      transform 600ms var(--ease-out-strong);
+    transition-delay: var(--delay, 0ms);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Curseur alpha */
+  .alpha-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--color-cta) 0%,
+      var(--color-cta) var(--fill),
+      rgb(255 255 255 / 0.12) var(--fill)
+    );
+    cursor: pointer;
+  }
+  .alpha-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #fff;
+    border: 4px solid var(--color-cta);
+    box-shadow: 0 0 0 6px rgb(225 29 72 / 0.18);
+    transition: transform 160ms var(--ease-out-strong);
+  }
+  .alpha-range:active::-webkit-slider-thumb {
+    transform: scale(1.1);
+  }
+  .alpha-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 999px;
+    background: #fff;
+    border: 4px solid var(--color-cta);
+    box-shadow: 0 0 0 6px rgb(225 29 72 / 0.18);
+  }
+
+  /* Lignes du classement : déplacement fluide quand l'ordre change */
+  .rank-row {
+    transition: transform 320ms var(--ease-in-out-strong);
+  }
+  .score-bar {
+    transform-origin: left;
+    transition: transform 240ms var(--ease-out-strong);
+  }
+
+  /* Vitrine de l'application */
+  .glow {
+    border-radius: 999px;
+    background: radial-gradient(closest-side, var(--glow), transparent);
+    transition: --glow 900ms ease;
+  }
+  .carousel-card {
+    transition:
+      transform 520ms var(--ease-in-out-strong),
+      opacity 400ms ease,
+      filter 400ms ease;
+  }
+  .fade-in {
+    animation: fade-in 450ms var(--ease-out-strong) both;
+  }
+
+  /* Hero : entrée échelonnée puis flottement lent des affiches */
+  .hero-in {
+    animation: hero-in 900ms var(--ease-out-strong) both;
+    animation-delay: var(--in-delay, 0s);
+  }
+  .float {
+    animation: float 7s ease-in-out infinite;
+    animation-delay: var(--float-delay, 0s);
+  }
+
+  /* Logo : le réseau se trace une fois au chargement */
+  .logo-draw line {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: logo-line 700ms var(--ease-out-strong) forwards;
+    animation-delay: calc(250ms + var(--i) * 45ms);
+  }
+  .logo-draw circle {
+    opacity: 0;
+    transform: scale(0.6);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: logo-node 450ms var(--ease-out-strong) forwards;
+    animation-delay: calc(150ms + var(--i) * 60ms);
+  }
+}
+
+@keyframes logo-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes logo-node {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    transform: none;
+    transition: opacity 300ms ease;
+  }
+  .rank-row,
+  .score-bar {
+    transition: none;
+  }
+  .carousel-card {
+    transition: opacity 200ms ease;
+  }
+  .fade-in {
+    animation-duration: 1ms;
+  }
+  .hero-in {
+    animation: fade-in 300ms ease both;
+  }
+  .float {
+    animation: none;
+  }
+  .logo-draw line {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .logo-draw circle {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
